@@ -4,6 +4,8 @@
 
 SocksFlareProx deploys HTTP proxy endpoints on Cloudflare Workers and can run local SOCKS proxies that route traffic through those workers. It supports all HTTP methods (GET, POST, PUT, DELETE, etc.) and provides IP masking through Cloudflare's global network. 100k requests per day are free!
 
+Inspired by the original FlareProx project by @MrTurvey (MIT License).
+
 ## Features
 
 - **HTTP Support**: All HTTP methods (GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD)
