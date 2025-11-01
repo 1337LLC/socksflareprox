@@ -32,6 +32,14 @@ SocksFlareProx deploys Cloudflare Workers that act as HTTP proxies and can optio
 2. **Tunnel Setup**: SocksFlareProx establishes a tunnel to your worker endpoint
 3. **Traffic Relay**: TCP traffic is relayed through Cloudflare to the target
 
+## Screenshots
+### Create Proxies:
+![List](screenshots/proxyscreate.png "list")
+### Test Proxies:
+![Usage](screenshots/proxys.png "usage")
+### Using a Proxy with BurpSuite:
+![Create](screenshots/request.png "create")
+
 ## Quick Start
 
 ### 1. Install Dependencies
