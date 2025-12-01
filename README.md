@@ -84,7 +84,8 @@ curl "https://your-worker.account.workers.dev?url=https://httpbin.org/get"
 curl -X POST -d "username=admin" "https://your-worker.account.workers.dev?url=https://httpbin.org/post"
 
 # PUT request with JSON
-curl -X PUT -d '{"username":"admin"}' -H "Content-Type: application/json"   "https://your-worker.account.workers.dev?url=https://httpbin.org/put"
+curl -X PUT -d '{"username":"admin"}' -H "Content-Type: application/json" \
+  "https://your-worker.account.workers.dev?url=https://httpbin.org/put"
 
 # DELETE request
 curl -X DELETE "https://your-worker.account.workers.dev?url=https://httpbin.org/delete"
@@ -121,3 +122,78 @@ python3 flareprox.py cleanup
 3. Click 'Create Token' and use the 'Edit Cloudflare Workers' template
 4. Set the 'account resources' and 'zone resources' to all. Click 'Continue to Summary'
 5. Click 'Create Token' and copy the token and your Account ID from the dashboard
+
+
+## Programmatic Usage
+
+SocksFlareProx can be imported and used directly in your Python applications (the module and class names remain `flareprox` / `FlareProx`). Here's how to send a POST request:
+
+```python
+#!/usr/bin/env python3
+from flareprox import FlareProx, FlareProxError
+import json
+
+# Initialize SocksFlareProx client
+flareprox = FlareProx(config_file="flareprox.json")
+
+# Check if configured
+if not flareprox.is_configured:
+    print("SocksFlareProx not configured. Run: python3 flareprox.py config")
+    exit(1)
+
+# Create some endpoints if none exist
+endpoints = flareprox.sync_endpoints()
+if not endpoints:
+    print("Creating proxy endpoints...")
+    flareprox.create_proxies(count=2)
+
+# Make a POST request through SocksFlareProx
+try:
+    # Prepare POST data
+    post_data = json.dumps({
+        "username": "testuser",
+        "message": "Hello from SocksFlareProx!",
+        "timestamp": "2025-01-01T12:00:00Z"
+    })
+
+    headers = {
+        "Content-Type": "application/json",
+        "User-Agent": "SocksFlareProx-Client/1.0"
+    }
+
+    # Send POST request via random SocksFlareProx endpoint
+    response = flareprox.redirect_request(
+        target_url="https://httpbin.org/post",
+        method="POST",
+        headers=headers,
+        data=post_data
+    )
+
+    if response.status_code == 200:
+        result = response.json()
+        print(f"✓ POST successful via SocksFlareProx")
+        print(f"Origin IP: {result.get('origin', 'unknown')}")
+        print(f"Posted data: {result.get('json', {})}")
+    else:
+        print(f"Request failed with status: {response.status_code}")
+
+except FlareProxError as e:
+    print(f"SocksFlareProx error: {e}")
+except Exception as e:
+    print(f"Request error: {e}")
+```
+
+
+## Use Cases
+
+- **API Development**: Test APIs through different IP addresses
+- **Web Scraping**: Route requests through Cloudflare's network
+- **Security Testing**: Mask your origin IP during testing
+- **Load Testing**: Distribute requests across multiple endpoints
+- **Privacy**: Add an extra layer between your requests and target servers
+
+## Disclaimer
+
+SocksFlareProx is designed for legitimate development, testing, and research purposes. Users are responsible for ensuring their usage complies with applicable laws and terms of service. The authors assume no liability for misuse of this tool.
+
+---
